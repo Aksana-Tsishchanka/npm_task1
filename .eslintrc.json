@@ -1,0 +1,16 @@
+{
+  "parser": "babel-eslint",
+  "rules": {
+    "semi": 2,
+    "indent": ["error", 2],
+    "max-len": [1, 120, 2, {"ignoreComments": true}],
+    "object-curly-spacing": ["error", "always", { "objectsInObjects": false }]
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "globals": {
+    "console": false,
+    "module": true
+  }
+}
