@@ -1,10 +1,12 @@
-require('babel-register')({
-    presets: [ 'es2015', 'stage-2' ]
-});
+/*eslint-disable*/
+const config = require('./config/app');
+/*eslint-enable*/
 
-let config = require('./config/app');
-const { User, Product } = require('./models/models');
+import { default as Module } from './models';
+const { User, Product } = Module;
 
+/*eslint-disable*/
 console.log(config.name);
+/*eslint-enable*/
 new User();
 new Product();
