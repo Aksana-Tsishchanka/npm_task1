@@ -1,0 +1,30 @@
+{
+  "name": "npm_task1",
+  "version": "1.0.0",
+  "description": "task1 for Node.js mentoring program",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aksana-Tsishchanka/npm_task1.git"
+  },
+  "keywords": [
+    "npm"
+  ],
+  "author": "Aksana_Tolstoguzova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aksana-Tsishchanka/npm_task1/issues"
+  },
+  "homepage": "https://github.com/Aksana-Tsishchanka/npm_task1#readme",
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0"
+  }
+}
