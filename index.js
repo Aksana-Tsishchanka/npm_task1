@@ -1,12 +1,9 @@
-/*eslint-disable*/
-const config = require('./config/app');
-/*eslint-enable*/
+import { default as config }  from './config/app';
 
-import { default as Module } from './models';
+import * as Module from './models';
 const { User, Product } = Module;
 
-/*eslint-disable*/
 console.log(config.name);
-/*eslint-enable*/
+
 new User();
 new Product();
