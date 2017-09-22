@@ -4,8 +4,10 @@
   "description": "task1 for Node.js mentoring program",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node index.js",
-    "test": "node"
+    "compile": "babel-node index.js",
+    "test": "node",
+    "start": "nodemon --exec npm run compile",
+    "build": "mkdir -p build && babel index.js --out-file build/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,11 +23,14 @@
   },
   "homepage": "https://github.com/Aksana-Tsishchanka/npm_task1#readme",
   "devDependencies": {
-    "eslint": "4.6.1"
+    "eslint": "4.6.1",
+    "nodemon": "^1.12.1"
   },
   "dependencies": {
     "babel-cli": "6.26.0",
     "babel-preset-env": "1.6.0",
-    "babel-preset-stage-2": "6.24.1"
+    "babel-preset-stage-2": "6.24.1",
+    "chokidar": "^1.7.0",
+    "csvtojson": "^1.1.7"
   }
 }
