@@ -12,6 +12,8 @@
   ],
   "globals": {
     "console": true,
-    "module": true
+    "module": true,
+    "setInterval": true,
+    "Promise": true
   }
 }
