@@ -6,9 +6,6 @@ class Importer extends EventEmitter {
     super();
     this.broadcaster = broadcaster;
   }
-  // async test(path) {
-  //   return await readCVSAsync(path);
-  // }
 }
 
 Importer.prototype.import = async function() {

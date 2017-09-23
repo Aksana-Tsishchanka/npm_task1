@@ -19,9 +19,3 @@ importer.import()
   .catch(error => {
     console.log(error);
   });
-
-// let testAsync = importer.test('data/LocationsImportSample.csv');
-// console.log(testAsync instanceof Promise);
-// testAsync
-//   .then(data => { console.log(data)})
-//   .catch(data =>{ console.log(data)});
