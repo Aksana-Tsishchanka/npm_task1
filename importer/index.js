@@ -1,40 +1,39 @@
-import EventEmitter from 'events';
-import csv from 'csvtojson';
+import csvjson from 'csvjson';
+import fs from 'fs';
 
-class Importer extends EventEmitter {
-  constructor(broadcaster) {
-    super();
-    this.broadcaster = broadcaster;
+class Importer {
+  
+  static async import(filePath) {
+    return await csvJsoAsync(filePath);
+  }
+  
+  static importSync(filePath) {
+    return csvJsonSync(filePath);
   }
 }
 
-Importer.prototype.import = async function() {
-  let data = await broadcastOnAsync.apply(this);
-  return readCVSAsync(data);
-};
-
-
-function broadcastOnAsync() {
-  let self = this;
-  
-  return new Promise(resolve => {
-    self.broadcaster.on('dirwatcher:changed', filePath => {
-      if (filePath) return resolve(filePath);
+function csvJsoAsync(path) {
+  return new Promise((resolve, reject) => {
+    let options = {
+      delimiter : ',',
+      quote     : '"'
+    };
+    
+    fs.readFile(path, { encoding : 'utf8' }, (error, data) => {
+      if (error) reject(error)
+      else resolve(csvjson.toObject(data, options));
     });
   });
 }
 
-function readCVSAsync(path) {
-  return new Promise((resolve, reject) => {
-    csv()
-      .fromFile(path)
-      .on('json', jsonObj => {
-        resolve(jsonObj);
-      })
-      .on('done', (error = '') => {
-        if (error) reject(error);
-      });
-  });
+function csvJsonSync(path) {
+  let options = {
+    delimiter : ',',
+    quote     : '"'
+  };
+  
+  let data = fs.readFileSync(path, { encoding : 'utf8' });
+  return csvjson.toObject(data, options);
 }
 
 export default Importer;
