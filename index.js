@@ -15,13 +15,13 @@ broadcaster.watch('./data', 1000);
 broadcaster.on('dirwatcher:changed',
     filePath => Importer.import(filePath)
       .then(data => {
-        console.log('import: ');
+        console.log('import async: ');
         console.log(data);
       }));
 
 broadcaster.on('dirwatcher:changed',
   filePath => {
-    console.log('importSync: ');
+    console.log('import sync: ');
     console.log(Importer.importSync(filePath));
   }
 );
