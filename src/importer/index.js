@@ -20,7 +20,7 @@ function csvJsonAsync(path) {
     };
     
     fs.readFile(path, { encoding : 'utf8' }, (error, data) => {
-      if (error) reject(error)
+      if (error) reject(error);
       else resolve(csvjson.toObject(data, options));
     });
   });

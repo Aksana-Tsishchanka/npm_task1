@@ -12,8 +12,9 @@
   ],
   "globals": {
     "console": true,
-    "module": true,
-    "setInterval": true,
     "Promise": true
+  },
+  "env": {
+    "node": true
   }
 }
