@@ -4,7 +4,7 @@ import fs from 'fs';
 class Importer {
   
   static async import(filePath) {
-    return await csvJsoAsync(filePath);
+    return await csvJsonAsync(filePath);
   }
   
   static importSync(filePath) {
@@ -12,7 +12,7 @@ class Importer {
   }
 }
 
-function csvJsoAsync(path) {
+function csvJsonAsync(path) {
   return new Promise((resolve, reject) => {
     let options = {
       delimiter : ',',

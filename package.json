@@ -4,10 +4,10 @@
   "description": "task1 for Node.js mentoring program",
   "main": "index.js",
   "scripts": {
-    "compile": "babel-node index.js",
+    "compile": "babel-node src/index.js",
     "test": "node",
     "start": "nodemon --exec npm run compile",
-    "build": "mkdir -p build && babel index.js --out-file build/index.js"
+    "build": "mkdir -p build && babel src --out-file build/index.js"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,6 @@
     "babel-preset-env": "1.6.0",
     "babel-preset-stage-2": "6.24.1",
     "chokidar": "^1.7.0",
-    "csvjson": "^4.3.4",
-    "csvtojson": "^1.1.7",
-    "deasync": "^0.1.10"
+    "csvjson": "^4.3.4"
   }
 }

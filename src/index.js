@@ -1,7 +1,7 @@
 import config from './config/app';
-import { User, Product }  from './models';
-import { default as Importer } from './importer';
-import { default as DirWatcher } from './dirwatcher';
+import { User, Product }  from './models/index';
+import { default as Importer } from './importer/index';
+import { default as DirWatcher } from './dirwatcher/index';
 
 
 

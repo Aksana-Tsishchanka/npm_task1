@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { default as Chokidar } from 'chokidar';
+import Chokidar from 'chokidar';
 
 class DirWatcher extends EventEmitter {
   
