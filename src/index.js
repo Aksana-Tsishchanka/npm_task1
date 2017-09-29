@@ -13,15 +13,16 @@ const broadcaster = new DirWatcher();
 broadcaster.watch('./data', 1000);
 
 broadcaster.on('dirwatcher:changed',
-    filePath => Importer.import(filePath)
-      .then(data => {
-        console.log('import async: ');
-        console.log(data);
-      }));
+  async filePath => {
+    const data = await Importer.import(filePath);
+    console.log('Async import: ');
+    console.log(data);
+  }
+);
 
 broadcaster.on('dirwatcher:changed',
   filePath => {
-    console.log('import sync: ');
+    console.log('Sync import: ');
     console.log(Importer.importSync(filePath));
   }
 );
