@@ -10,8 +10,8 @@
   "extends": [
     "eslint:recommended"
   ],
-  "globals": {
-    "console": true,
-    "module": true
+  "env": {
+    "node": true,
+    "es6": true
   }
 }
