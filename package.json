@@ -7,7 +7,8 @@
     "compile": "babel-node src/index.js",
     "test": "node",
     "start": "nodemon --exec npm run compile",
-    "build": "mkdir -p build && babel src --out-file build/index.js"
+    "build": "mkdir -p build && babel src --out-file build/index.js",
+    "lint": "eslint */*.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/Aksana-Tsishchanka/npm_task1#readme",
   "devDependencies": {
+    "babel-eslint": "^8.0.1",
     "eslint": "4.6.1",
     "nodemon": "^1.12.1"
   },

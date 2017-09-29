@@ -14,9 +14,14 @@ broadcaster.watch('./data', 1000);
 
 broadcaster.on('dirwatcher:changed',
   async filePath => {
-    const data = await Importer.import(filePath);
-    console.log('Async import: ');
-    console.log(data);
+    try {
+      const data = await Importer.import(filePath);
+      console.log('Async import: ');
+      console.log(data);
+    }
+    catch (err) {
+      console.log(err);
+    }
   }
 );
 

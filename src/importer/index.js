@@ -2,9 +2,15 @@ import csvjson from 'csvjson';
 import fs from 'fs';
 
 class Importer {
-  
   static async import(filePath) {
-    return await csvJsonAsync(filePath);
+    let data;
+    try {
+      data = await csvJsonAsync(filePath);
+      return data;
+    }
+    catch(err) {
+      console.log(err);
+    }
   }
   
   static importSync(filePath) {

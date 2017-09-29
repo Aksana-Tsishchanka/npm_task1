@@ -10,10 +10,6 @@
   "extends": [
     "eslint:recommended"
   ],
-  "globals": {
-    "console": true,
-    "Promise": true
-  },
   "env": {
     "node": true
   }
