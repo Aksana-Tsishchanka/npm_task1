@@ -8,7 +8,7 @@
     "test": "node",
     "start": "nodemon --exec npm run compile",
     "build": "mkdir -p build && babel src --out-file build/index.js",
-    "lint": "eslint */*.js"
+    "lint": "eslint src"
   },
   "repository": {
     "type": "git",
