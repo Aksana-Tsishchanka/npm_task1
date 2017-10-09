@@ -7,8 +7,8 @@
     "compile": "babel-node src/index.js",
     "test": "node",
     "start": "nodemon --exec npm run compile",
-    "build": "mkdir -p build && babel src --out-file build/index.js",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "build:cli": "babel utils --out-file build/streams.js"
   },
   "repository": {
     "type": "git",
@@ -26,13 +26,16 @@
   "devDependencies": {
     "babel-eslint": "^8.0.1",
     "eslint": "4.6.1",
-    "nodemon": "^1.12.1"
+    "nodemon": "1.12.1"
   },
   "dependencies": {
     "babel-cli": "6.26.0",
     "babel-preset-env": "1.6.0",
     "babel-preset-stage-2": "6.24.1",
-    "chokidar": "^1.7.0",
-    "csvjson": "^4.3.4"
+    "chokidar": "1.7.0",
+    "csvjson": "4.3.4",
+    "request": "2.83.0",
+    "through2": "2.0.3",
+    "yargs": "9.0.1"
   }
 }
