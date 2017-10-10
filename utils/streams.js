@@ -19,7 +19,7 @@ const actions = {
 
 export default actions;
 
-if (process.argv.includes('--action') || process.argv.includes('-a')) {
+if (require.main === module) {
   cliRun();
 }
 
