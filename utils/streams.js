@@ -93,8 +93,7 @@ function csvToJsonStreamTransform(buffer, encoding, next) {
 
 function csvToJsonStream(filePath) { /* 6, babel-node ./utils/streams.js -a csvToJsonStream -f ./data/test.csv */
   if (fs.existsSync(filePath) && path.extname(filePath) === '.csv') {
-    const readableStream = fs.createReadStream(filePath);
-    readableStream.setEncoding('utf8');
+    const readableStream = fs.createReadStream(filePath, 'utf8');
     readableStream
       .pipe(through(csvToJsonStreamTransform))
       .pipe(process.stdout);
@@ -112,8 +111,8 @@ function createFilePath(filePath, extension = '.json', name) {
 
 function csvToJsonFile(filePath) { /* 7, babel-node ./utils/streams.js -a csvToJsonFile -f ./data/test.csv */
   if (fs.existsSync(filePath) && path.extname(filePath) === '.csv') {
-    const readableStream = fs.createReadStream(filePath);
-    readableStream.setEncoding('utf8');
+    const readableStream = fs.createReadStream(filePath, 'utf8');
+    
     const fileName = createFilePath(filePath);
     const writableStream = fs.createWriteStream(fileName);
     readableStream
@@ -125,63 +124,11 @@ function csvToJsonFile(filePath) { /* 7, babel-node ./utils/streams.js -a csvToJ
   else console.log('Please specify correct file path');
 }
 
-function asyncOrderedWrite(cssFiles, writerableStream, pathFolder, additionalStream = () => {}) {
-  if (cssFiles.length === 0) {
-    additionalStream(writerableStream);
-    return;
-  }
-  let remainingCssFiles = cssFiles.splice(1);
-  let cssFile = cssFiles[0];
-  const readableStream = fs.createReadStream(`${pathFolder}${cssFile}`);
-  readableStream.setEncoding('utf8');
-  
-  readableStream.on('data', function(chunk) {
-    writerableStream.write(chunk + "\n");
-  });
-  
-  readableStream.on('end', function() {
-    asyncOrderedWrite(remainingCssFiles, writerableStream, pathFolder, additionalStream);
-  });
-}
-
 /* generate test files */
-function generateTestCSS(path = './data/test') {
-  fs.readdir(path, (err, files) => {
-    files.forEach(file => {
-      console.log(createFileName(`${getFolderPath(path)}${file}`, null, '_large'));
-      const writerableStream = fs.createWriteStream(createFileName(`${getFolderPath(path)}${file}`, null, '_large'));
-      let readableStream = fs.createReadStream(`${getFolderPath(path)}${file}`, 'utf8');
-      let data = '';
-      readableStream.on('data', function (chunk) {
-        data += chunk;
-      });
-      readableStream.on('end', function () {
-        writeDataToStream(data, writerableStream, 400000);
-      });
-    });
-  });
-}
-
-function writeDataToStream(data,writerableStream, count) {
+function writeDataToStream(data, writerableStream, count) {
   if (count === 0) return;
   writerableStream.write(data, function() {
-    let before = process.memoryUsage().rss;
-    writeDataToStream(data,writerableStream, --count);
-    console.log('memory increased by', Math.round((process.memoryUsage().rss - before) / 1024 / 1024), 'MB');
-  });
-}
-
-/* CSS Bundler */
-async function combineCSSFiles(pathFolder, resultFileName, writerableStream, additionalStream) {
-  fs.readdir(pathFolder, (err, files) => {
-    const cssFiles = files.filter(file => path.extname(file) === '.css' && file !== resultFileName);
-    asyncOrderedWrite(cssFiles, writerableStream, pathFolder, additionalStream);
-  });
-}
-
-function getCssFromWeb(writerableStream) {
-  request(BASE_CSS_URL).on('data', function(chunk) {
-    writerableStream.write(chunk);
+    writeDataToStream(data, writerableStream, --count);
   });
 }
 
@@ -196,6 +143,55 @@ function createFileName(filePath, extension, prefixName) {
   }
   pathJsonFile.base = `${pathJsonFile.name}${prefixName}${pathJsonFile.ext}`;
   return path.format(pathJsonFile);
+}
+
+function generateTestCSS(path = './data/css') {
+  fs.readdir(path, (err, files) => {
+    files.forEach(file => {
+      console.log(createFileName(`${getFolderPath(path)}${file}`, null, '_large'));
+      const writerableStream = fs.createWriteStream(createFileName(`${getFolderPath(path)}${file}`, null, '_large'));
+      let readableStream = fs.createReadStream(`${getFolderPath(path)}${file}`, 'utf8');
+      let data = '';
+      readableStream.on('data', function (chunk) {
+        data += chunk; //only for small files
+      });
+      readableStream.on('end', function () {
+        writeDataToStream(data, writerableStream, 400000);
+      });
+    });
+  });
+}
+
+/* CSS Bundler */
+function asyncOrderedWrite(cssFiles, writerableStream, pathFolder, additionalStream = () => {}) {
+  if (cssFiles.length === 0) {
+    additionalStream(writerableStream);
+    return;
+  }
+  let remainingCssFiles = cssFiles.splice(1);
+  let cssFile = cssFiles[0];
+  const readableStream = fs.createReadStream(`${pathFolder}${cssFile}`, 'utf8');
+  
+  readableStream.on('data', function(chunk) {
+    writerableStream.write(chunk + "\n");
+  });
+  
+  readableStream.on('end', function() {
+    asyncOrderedWrite(remainingCssFiles, writerableStream, pathFolder, additionalStream);
+  });
+}
+
+async function combineCSSFiles(pathFolder, resultFileName, writerableStream, additionalStream) {
+  fs.readdir(pathFolder, (err, files) => {
+    const cssFiles = files.filter(file => path.extname(file) === '.css' && file !== resultFileName);
+    asyncOrderedWrite(cssFiles, writerableStream, pathFolder, additionalStream);
+  });
+}
+
+function getCssFromWeb(writerableStream) {
+  request(BASE_CSS_URL).on('data', function(chunk) {
+    writerableStream.write(chunk);
+  });
 }
 
 function cssBundler(path, resultFileName = 'bundle.css') { /* 8, babel-node -- ./utils/streams.js -a cssBundler -p ./data/css */
