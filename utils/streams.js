@@ -33,6 +33,8 @@ function cliRun() {
     .example('$0 -a csvToJsonStream -f ./data/test.csv')
     .example('$0 -a csvToJsonFile -f ./data/test.csv')
     .example('$0 --action cssBundler --path ./data/css')
+    .example('$0 --action generateTestCSS --path ./data/css')
+    .example('$0 --action generateCSV --file ./data/test.csv')
     .demandOption(['action'])
     .option('action', {
       alias: 'a',
@@ -49,9 +51,10 @@ function cliRun() {
     })
     .help('h')
     .argv;
+  let pathActions = ['cssBundler', 'generateTestCSS'];
   
   if (argv.action) {
-    if(argv.action === 'cssBundler') actions[argv.action](argv.path);
+    if(pathActions.includes(argv.action)) actions[argv.action](argv.path);
     else actions[argv.action](argv.file);
   }
 }
@@ -119,8 +122,6 @@ function csvToJson(filePath, output) {
       })
       .once('finish', function() {
         output.write(']');
-      })
-      .on('end', function() {
         console.log('\nDone!');
       });
   }
@@ -146,7 +147,7 @@ function csvToJsonFile(filePath) { /* 7, babel-node ./utils/streams.js -a csvToJ
 
 /* generate test files */
 function writeDataToStream(data, writerableStream, count) {
-  if (count === 0) return;
+  if (count === 0) { console.log("csv file was generated!"); return;}
   writerableStream.write(data, function() {
     writeDataToStream(data, writerableStream, --count);
   });
@@ -173,7 +174,7 @@ function generateTestCSS(path = './data/css') {
       let readableStream = fs.createReadStream(`${getFolderPath(path)}${file}`, 'utf8');
       let data = '';
       readableStream.on('data', function (chunk) {
-        data += chunk; //only for small files
+        data += chunk + '\n'; //only for small files
       });
       readableStream.on('end', function () {
         writeDataToStream(data, writerableStream, 4000);
@@ -182,16 +183,16 @@ function generateTestCSS(path = './data/css') {
   });
 }
 
-function generateCSV(path = './data/test.csv') { /* babel-node -- ./utils/streams.js -a generateCSV */
+function generateCSV(path = './data/test.csv') { /* babel-node ./utils/streams.js -a generateCSV */
   let headers = 'Column1,Column2,Column3';
   let content = `value1,value2,value3\nvalue4,value5,value6\nvalue7,value8,value9\n`;
   const writableStream = fs.createWriteStream(path);
   writableStream.write(headers + '\n');
-  writeDataToStream(content, writableStream, 10000);
+  writeDataToStream(content, writableStream, 1000);
 }
 
 /* CSS Bundler */
-function simpleCssBundler(fPath, resultFileName = 'bundler.css') {
+function simpleCssBundler(fPath, resultFileName = 'bundler.css') { /* 8, babel-node -- ./utils/streams.js -a cssBundler -p ./data/css */
   if (fs.existsSync(fPath)) {
     const folderPath = getFolderPath(fPath);
     const writeStream = fs.createWriteStream(`${getFolderPath(folderPath)}${resultFileName}`);
@@ -202,49 +203,6 @@ function simpleCssBundler(fPath, resultFileName = 'bundler.css') {
         console.log(`${getFolderPath(folderPath)}${file}`);
         return fs.createReadStream(`${getFolderPath(folderPath)}${file}`, 'utf8');
       }
-    )]).pipe(writeStream);
-  }
+    ), request(BASE_CSS_URL)]).pipe(writeStream);
+  } else console.log('Path is not found');
 }
-
-/* second solution for CssBundler */
-function asyncOrderedWrite(cssFiles, writableStream, pathFolder, additionalStream = () => {}) {
-  if (cssFiles.length === 0) {
-    additionalStream(writableStream);
-    return;
-  }
-  let remainingCssFiles = cssFiles.splice(1);
-  let cssFile = cssFiles[0];
-  const readableStream = fs.createReadStream(`${pathFolder}${cssFile}`, 'utf8');
-  
-  readableStream.on('data', function(chunk) {
-    writableStream.write(chunk + "\n");
-  });
-  
-  readableStream.on('end', function() {
-    asyncOrderedWrite(remainingCssFiles, writableStream, pathFolder, additionalStream);
-  });
-}
-
-async function combineCSSFiles(pathFolder, resultFileName, writableStream, additionalStream) {
-  fs.readdir(pathFolder, (err, files) => {
-    const cssFiles = files.filter(file => path.extname(file) === '.css' && file !== resultFileName);
-    asyncOrderedWrite(cssFiles, writableStream, pathFolder, additionalStream);
-  });
-}
-
-function getCssFromWeb(writableStream) {
-  request(BASE_CSS_URL).on('data', function(chunk) {
-    writableStream.write(chunk);
-  });
-}
-/* eslint-disable */
-function cssBundler(path, resultFileName = 'bundle.css') { /* 8, babel-node -- ./utils/streams.js -a cssBundler -p ./data/css */
-  if (fs.existsSync(path)) {
-    const folderPath = getFolderPath(path);
-    const writableStream = fs.createWriteStream(`${getFolderPath(folderPath)}${resultFileName}`);
-    combineCSSFiles(folderPath, resultFileName, writableStream, getCssFromWeb);
-    console.log(`${resultFileName} was bundled`);
-    
-  } else console.log('Please specify correct folder path');
-}
-/* eslint-enable */
