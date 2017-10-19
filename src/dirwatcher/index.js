@@ -7,6 +7,7 @@ class DirWatcher extends EventEmitter {
     let options = {
       usePolling: !!delay,
       interval: delay,
+      ignored: /(\.json|\.css|\.txt)/
     };
     Chokidar.watch(path, options)
       .on('add', path => {

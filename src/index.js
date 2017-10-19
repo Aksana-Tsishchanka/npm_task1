@@ -2,8 +2,7 @@ import config from './config/app';
 import { User, Product }  from './models/index';
 import { default as Importer } from './importer/index';
 import { default as DirWatcher } from './dirwatcher/index';
-
-
+import Actions from './../utils/streams';
 
 console.log(config.name);
 new User();
@@ -31,3 +30,5 @@ broadcaster.on('dirwatcher:changed',
     console.log(Importer.importSync(filePath));
   }
 );
+
+Actions.transform();
