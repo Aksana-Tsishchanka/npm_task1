@@ -36,7 +36,6 @@
     "babel-preset-env": "1.6.0",
     "babel-preset-stage-2": "6.24.1",
     "chokidar": "1.7.0",
-    "cookie-parser": "^1.4.3",
     "csvjson": "4.3.4",
     "express": "^4.16.2",
     "multistream": "2.1.0",
