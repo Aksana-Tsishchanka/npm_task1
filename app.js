@@ -1,5 +1,6 @@
 import Express from 'express';
-import { User, Product } from './models/index';
+import { User, Product } from './models';
+import { cookieParser, queryParser } from './middlewares';
 
 const app = new Express();
 const bodyParser = require('body-parser');
@@ -24,28 +25,8 @@ function getModelById(models, id) {
 
 app
   .use('/api/products', bodyParser.json())
-  .use((req, res, next) => {
-    if (req.headers.cookie) {
-      req.parsedCookies = cookieParser(req.headers.cookie);
-    } else req.parsedCookies = {};
-    req.pipe(res);
-    next();
-  })
-  .use((req, res, next) => {
-    req.parsedQuery = req.query;
-    req.pipe(res);
-    next();
-  });
-
-function cookieParser(cookie) {
-  let result = {};
-  let arr = cookie.split(';');
-  arr.map(el => {
-    const cookieStr = el.split('=');
-    result[cookieStr[0]] = cookieStr[1];
-  });
-  return result;
-}
+  .use(cookieParser)
+  .use(queryParser);
 
 app.get('/', (request, response) => {
   const { parsedCookies, parsedQuery } = request;
