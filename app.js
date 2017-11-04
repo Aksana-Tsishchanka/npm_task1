@@ -66,14 +66,14 @@ app.get('/api/products/:id', (request, response) => {
   const product = getProduct(request.params.id);
   if (product) {
     response.json(product);
-  } else response.json({ error: 'Not found' });
+  } else response.status(404).json({ error: 'Not found' });
 });
 
 app.get('/api/products/:id/reviews', (request, response) => {
   const product = getProduct(request.params.id);
   if (product) {
     response.json(product.getReviews());
-  } else response.json({ error: 'Not found' });
+  } else response.status(404).json({ error: 'Not found' });
 });
 
 app.get('/api/users', (request, response) => {
