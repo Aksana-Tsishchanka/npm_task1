@@ -52,7 +52,7 @@ app.route('/api/products')
   })
   .post((req, res) => {
     let newProduct = createProduct(req.body);
-    res.send(newProduct);
+    res.json(newProduct);
   });
 
 function getProduct(id) {
@@ -65,19 +65,19 @@ function getProduct(id) {
 app.get('/api/products/:id', (request, response) => {
   const product = getProduct(request.params.id);
   if (product) {
-    response.send(product);
-  } else response.send({ error: 'Not found' });
+    response.json(product);
+  } else response.json({ error: 'Not found' });
 });
 
 app.get('/api/products/:id/reviews', (request, response) => {
   const product = getProduct(request.params.id);
   if (product) {
-    response.send(product.getReviews());
-  } else response.send({ error: 'Not found' });
+    response.json(product.getReviews());
+  } else response.json({ error: 'Not found' });
 });
 
 app.get('/api/users', (request, response) => {
-  response.send(users);
+  response.json(users);
 });
 
 export default app;
