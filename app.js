@@ -4,6 +4,7 @@ import { cookieParser, queryParser } from './middlewares';
 
 const app = new Express();
 const bodyParser = require('body-parser');
+const router = Express.Router();
 
 /* generate data */
 let users = [];
@@ -24,11 +25,12 @@ function getModelById(models, id) {
 }
 
 app
-  .use('/api/products', bodyParser.json())
+  .use(bodyParser.json())
   .use(cookieParser)
-  .use(queryParser);
+  .use(queryParser)
+  .use('/', router);
 
-app.get('/', (request, response) => {
+router.get('/', (request, response) => {
   const { parsedCookies, parsedQuery } = request;
   response.send(`Parsed cookies: ${JSON.stringify(parsedCookies)}\n
     Parsed query: ${JSON.stringify(parsedQuery)}
@@ -46,13 +48,13 @@ function createProduct({ name, reviews = [] }) {
   return product;
 }
 
-app.route('/api/products')
+router.route('/api/products')
   .get((request, response) => {
-    response.send(products);
+    response.json(products);
   })
   .post((req, res) => {
-    let newProduct = createProduct(req.body);
-    res.json(newProduct);
+    const newProduct = createProduct(req.body);
+    res.send(newProduct);
   });
 
 function getProduct(id) {
@@ -62,21 +64,21 @@ function getProduct(id) {
   }
 }
 
-app.get('/api/products/:id', (request, response) => {
+router.get('/api/products/:id', (request, response) => {
   const product = getProduct(request.params.id);
   if (product) {
     response.json(product);
   } else response.status(404).json({ error: 'Not found' });
 });
 
-app.get('/api/products/:id/reviews', (request, response) => {
+router.get('/api/products/:id/reviews', (request, response) => {
   const product = getProduct(request.params.id);
   if (product) {
     response.json(product.getReviews());
   } else response.status(404).json({ error: 'Not found' });
 });
 
-app.get('/api/users', (request, response) => {
+router.get('/api/users', (request, response) => {
   response.json(users);
 });
 
