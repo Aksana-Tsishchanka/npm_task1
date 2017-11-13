@@ -15,14 +15,13 @@ const product = {
   ]
 };
 
-const server = http.createServer((req,res) => {
+const server = http.createServer((req, res) => {
   req.on('error', (err) => {
     console.error(err.stack);
   });
   
   res.setHeader('Content-Type', 'application/json');
-  res.write(JSON.stringify(product));
-  res.end();
+  res.end(JSON.stringify(product));
 });
 
 server.listen(port, () => {

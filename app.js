@@ -25,6 +25,7 @@ function getModelById(models, id) {
 }
 
 app
+  .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
   .use(cookieParser)
   .use(queryParser)

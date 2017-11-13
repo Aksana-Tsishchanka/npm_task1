@@ -3,7 +3,7 @@ function getCookie(cookie) {
   let arr = cookie.split(';');
   arr.map(el => {
     const cookieStr = el.split('=');
-    result[cookieStr[0]] = cookieStr[1];
+    result[cookieStr[0].split(" ").join("")] = cookieStr[1];
   });
   return result;
 }
