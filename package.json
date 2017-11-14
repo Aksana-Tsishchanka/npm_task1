@@ -8,7 +8,9 @@
     "test": "node",
     "start": "nodemon --exec npm run compile",
     "lint": "eslint src",
-    "build:cli": "babel utils --out-file build/streams.js"
+    "build:cli": "babel utils --out-file build/streams.js",
+    "express": "babel-node index.js",
+    "express:app": "nodemon --exec npm run express"
   },
   "repository": {
     "type": "git",
@@ -35,6 +37,7 @@
     "babel-preset-stage-2": "6.24.1",
     "chokidar": "1.7.0",
     "csvjson": "4.3.4",
+    "express": "^4.16.2",
     "multistream": "2.1.0",
     "request": "2.83.0",
     "through2": "2.0.3",
