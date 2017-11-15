@@ -38,7 +38,10 @@
     "chokidar": "1.7.0",
     "csvjson": "4.3.4",
     "express": "^4.16.2",
+    "jsonwebtoken": "8.1.0",
     "multistream": "2.1.0",
+    "passport": "0.4.0",
+    "passport-local": "^1.0.0",
     "request": "2.83.0",
     "through2": "2.0.3",
     "yargs": "9.0.1"

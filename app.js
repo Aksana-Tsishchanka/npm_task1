@@ -1,6 +1,9 @@
 import Express from 'express';
 import { User, Product } from './models';
 import { cookieParser, queryParser } from './middlewares';
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
 
 const app = new Express();
 const bodyParser = require('body-parser');
@@ -28,14 +31,85 @@ app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
   .use(cookieParser)
-  .use(queryParser)
-  .use('/', router);
+  .use(queryParser);
+
+app.use('/', router);
+
+router
+  .use('/api', (req, res, next) => {
+    try {
+      jwt.verify(req.headers['x-access-token'], 'secret');
+      next();
+    } catch(e) {
+      res.status(403).json({ error: 'Access denied.' });
+    }
+  });
 
 router.get('/', (request, response) => {
   const { parsedCookies, parsedQuery } = request;
   response.send(`Parsed cookies: ${JSON.stringify(parsedCookies)}\n
     Parsed query: ${JSON.stringify(parsedQuery)}
   `);
+});
+
+function generateJWT(login = 'test', pass = '123') {
+  return jwt.sign({
+    login,
+    pass
+  }, 'secret', {
+    expiresIn: 24 * 60 * 60
+  });
+}
+
+app.post('/auth', (req, res, next) => {
+  console.log(LocalStrategy);
+  const { login, pass } = req.body;
+  if (login === 'admin' && pass === "admin") {
+    const token = generateJWT(login, pass);
+    
+    const authResponse = {
+      code: 200,
+      message: "OK",
+      data: {
+        user: {
+          email: "...",
+          username: login
+        }
+      },
+      token
+    };
+    res.json(authResponse);
+  } else {
+    res.status(404).send({
+      code: 404,
+      message: "Not Found",
+    });
+  }
+  next();
+});
+
+passport.use(new LocalStrategy(
+  {
+    usernameField: 'login',
+    passwordField: 'pass',
+    session: false
+  },
+  function (user, pass, done) {
+    if (user === 'admin' && pass === 'admin') {
+      return done(null, { login: 'admin' });
+    } else return done(null, false);
+  }));
+
+app.use(passport.initialize());
+
+app.post('/authenticate', passport.authenticate('local', { session: false, failureRedirect: '/login', successRedirect: '/product' }));
+
+app.get('/product', (req, res) => {
+  res.json('PRODUCT PAGE!');
+});
+
+app.get('/login', (req, res) => {
+  res.json('Please login before proceed');
 });
 
 function createProduct({ name, reviews = [] }) {
