@@ -1,4 +1,5 @@
 import Express from 'express';
+import session from 'express-session';
 import { User, Product } from './models';
 import { cookieParser, queryParser } from './middlewares';
 import jwt from 'jsonwebtoken';
@@ -8,6 +9,8 @@ import { Strategy as LocalStrategy } from 'passport-local';
 const app = new Express();
 const bodyParser = require('body-parser');
 const router = Express.Router();
+
+const myUser =  { id: 1, username: 'admin', password: 'admin', displayName: 'Jack', emails: [ { value: 'jack@example.com' } ] };
 
 /* generate data */
 let users = [];
@@ -61,8 +64,8 @@ function generateJWT(login = 'test', pass = '123') {
   });
 }
 
+/* jwt */
 app.post('/auth', (req, res, next) => {
-  console.log(LocalStrategy);
   const { login, pass } = req.body;
   if (login === 'admin' && pass === "admin") {
     const token = generateJWT(login, pass);
@@ -88,25 +91,49 @@ app.post('/auth', (req, res, next) => {
   next();
 });
 
+/* passport local strategy */
 passport.use(new LocalStrategy(
-  {
-    usernameField: 'login',
-    passwordField: 'pass',
-    session: false
-  },
   function (user, pass, done) {
     if (user === 'admin' && pass === 'admin') {
-      return done(null, { login: 'admin' });
+      return done(null, myUser);
     } else return done(null, false);
   }));
 
+app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
+app.use(passport.session());
 
-app.post('/authenticate', passport.authenticate('local', { session: false, failureRedirect: '/login', successRedirect: '/product' }));
-
-app.get('/product', (req, res) => {
-  res.json('PRODUCT PAGE!');
+passport.serializeUser(function(user, done) {
+  done(null, user);
 });
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+app.post('/authenticate', passport.authenticate('local', { failureRedirect: '/login', successRedirect: '/product' }));
+
+function ensureLoggedIn(req, res, next) {
+  if (!req.user) {
+    res.status(403).json('403 - Not logged in!');
+  }
+  else {
+    next();
+  }
+}
+
+app.get('/logout',
+  function(req, res){
+    req.logout();
+    res.redirect('/');
+  });
+
+app.get('/product',
+  ensureLoggedIn,
+  (req, res) => {
+    res.json('PRODUCT PAGE!');
+  });
+/* passport local strategy end */
 
 app.get('/login', (req, res) => {
   res.json('Please login before proceed');
