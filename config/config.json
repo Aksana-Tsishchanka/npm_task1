@@ -1,0 +1,19 @@
+{
+  "development": {
+    "username": "aksana_tolstoguzova",
+    "password": null,
+    "database": "products",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "aksana_tolstoguzova",
+    "password": null,
+    "database": "products",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "dialect": "postgres"
+  }
+}

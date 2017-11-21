@@ -43,7 +43,11 @@
     "multistream": "2.1.0",
     "passport": "0.4.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.4.0",
+    "pg-hstore": "^2.3.2",
     "request": "2.83.0",
+    "sequelize": "^4.22.9",
+    "sequelize-cli": "^3.1.0",
     "through2": "2.0.3",
     "yargs": "9.0.1"
   }

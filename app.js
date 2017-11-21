@@ -1,10 +1,11 @@
 import Express from 'express';
 import session from 'express-session';
-import { User, Product } from './models';
+import { User, Product } from './models1';
 import { cookieParser, queryParser } from './middlewares';
 import { jwtAuth, verifyJwt } from './controllers/jwtAuthentication';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import DB from './database';
 
 const app = new Express();
 const bodyParser = require('body-parser');
@@ -23,10 +24,11 @@ for (let i = 0; i < 10; i++) {
   }
   products.push(product);
 }
-function getModelById(models, id) {
-  return models.filter(model => model.id == id)[0];
-}
 /* generate data end*/
+
+DB.init();
+DB.createUserTable();
+DB.createProductTable(products);
 
 app
   .use(bodyParser.urlencoded({ extended: true }))
@@ -48,49 +50,52 @@ app.post('/auth', jwtAuth);
 router.use('/api', verifyJwt);
 /* end jsonwebtoken for authentication */
 
-function createProduct({ name, reviews = [] }) {
-  const product = new Product(name);
-  if (reviews instanceof Array && reviews.length > 0) {
-    reviews.forEach(review => {
-      product.addReview(review);
-    });
-  }
-  products.push(product);
-  return product;
-}
-
 router.route('/api/products')
-  .get((request, response) => {
+  .get(async (request, response) => {
+    let products;
+    try {
+      products = await DB.getProducts();
+    }
+    catch(e) {
+      response.json({ error: e });
+    }
     response.json(products);
   })
-  .post((req, res) => {
-    const newProduct = createProduct(req.body);
+  .post(async (req, res) => {
+    const { name } = req.body;
+    const product = {
+      name
+    };
+    let newProduct;
+    try {
+      newProduct = await DB.createProduct(product);
+    }
+    catch(e) {
+      res.send({ error: "product can't be created" });
+    }
     res.send(newProduct);
   });
 
-function getProduct(id) {
-  const product = getModelById(products, id);
-  if (product) {
-    return product;
+router.get('/api/products/:id', async (request, response) => {
+  let product;
+  try {
+    product = await DB.getProductById(request.params.id);
   }
-}
-
-router.get('/api/products/:id', (request, response) => {
-  const product = getProduct(request.params.id);
-  if (product) {
-    response.json(product);
-  } else response.status(404).json({ error: 'Not found' });
+  catch(e) {
+    response.status(404).json({ error: 'Not found' });
+  }
+  response.json(product);
 });
 
-router.get('/api/products/:id/reviews', (request, response) => {
-  const product = getProduct(request.params.id);
-  if (product) {
-    response.json(product.getReviews());
-  } else response.status(404).json({ error: 'Not found' });
-});
-
-router.get('/api/users', (request, response) => {
-  response.json(users);
+router.get('/api/users', async (request, response) => {
+  let user;
+  try {
+    user = await DB.getUsers();
+  }
+  catch(e) {
+    response.json({ error: e });
+  }
+  response.json(user);
 });
 
 /*passport local strategy */
