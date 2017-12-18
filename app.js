@@ -25,8 +25,13 @@ for (let i = 0; i < 10; i++) {
   products.push(product);
 }
 /* generate data end*/
+try {
+  DB.init();
+} catch(e) {
+  console.error('\n Unable to connect to the database:');
+}
 
-DB.init();
+console.log('Connection has been established successfully.');
 DB.createUserTable();
 DB.createProductTable(products);
 
@@ -47,7 +52,7 @@ router.get('/', (request, response) => {
 
 /* jsonwebtoken for authentication */
 app.post('/auth', jwtAuth);
-router.use('/api', verifyJwt);
+//router.use('/api', verifyJwt);
 /* end jsonwebtoken for authentication */
 
 router.route('/api/products')
@@ -84,7 +89,9 @@ router.get('/api/products/:id', async (request, response) => {
   catch(e) {
     response.status(404).json({ error: 'Not found' });
   }
-  response.json(product);
+  if (!product) {
+    response.status(404).json({ error: 'Not found' });
+  } else response.json(product);
 });
 
 router.get('/api/users', async (request, response) => {

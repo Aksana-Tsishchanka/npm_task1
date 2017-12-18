@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import DB from '../database';
 
 function generateJWT(login = 'test', pass = '123') {
   return jwt.sign({
@@ -9,9 +10,15 @@ function generateJWT(login = 'test', pass = '123') {
   });
 }
 
-export function jwtAuth(req, res, next) {
+export async function jwtAuth(req, res, next) {
   const { login, pass } = req.body;
-  if (login === 'admin' && pass === "admin") {
+  let user;
+  try {
+    user = await DB.auth(login, pass);
+  } catch(e) {
+    res.status(404).send({ status: "Auth is not possible, try later" });
+  }
+  if (user) {
     const token = generateJWT(login, pass);
     
     const authResponse = {
@@ -33,7 +40,7 @@ export function jwtAuth(req, res, next) {
     });
   }
   next();
-};
+}
 
 export function verifyJwt(req, res, next) {
   try {

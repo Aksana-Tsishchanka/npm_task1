@@ -27,3 +27,6 @@ $ docker rm -v postgres-db
 $ docker ps
 # Checking if something is listening port, for instance, 3000 or 5432
 $ lsof -i :port
+
+# to start container
+docker start [OPTIONS] CONTAINER [CONTAINER...]

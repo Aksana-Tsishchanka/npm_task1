@@ -2,7 +2,7 @@ import Sequelize from 'sequelize';
 
 export default class DataBase {
   static sequelize;
-  static init() {
+  static async init() {
     const DB_URL = 'postgres://aksana_tolstoguzova:@localhost:5432/products';
     this.sequelize = new Sequelize(DB_URL,
       {
@@ -10,14 +10,7 @@ export default class DataBase {
           timestamps: false
         }
       });
-    this.sequelize
-      .authenticate()
-      .then(() => {
-        console.log('Connection has been established successfully.');
-      })
-      .catch(err => {
-        console.error('Unable to connect to the database:', err);
-      });
+    return await this.sequelize.authenticate();
   }
   
   static createUserTable() {
@@ -35,8 +28,8 @@ export default class DataBase {
         type: Sequelize.STRING
       }
     });
-    
-    this.userTable.sync({ force: true }).then(() => {
+    /* sync({ force: true }) to replace existing data */
+    this.userTable.sync().then(() => {
       console.log('Users table is created');
       this.userTable.create({
         email: 'test@mail.ru',
@@ -87,14 +80,22 @@ export default class DataBase {
   }
   
   static async getProductById(id) {
-    this.products.findAll({
+    return this.productTable.find({
       where: {
         id
       }
     });
   }
   static async createProduct(product) {
-    console.log(product);
     return await this.productTable.create(product);
+  }
+  
+  static async auth(login, pass) {
+    return this.userTable.find({
+      where: {
+        email: login,
+        pass
+      }
+    });
   }
 }
